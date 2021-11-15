@@ -1,5 +1,5 @@
 ---
-title: "ESM206_Lab 8"
+title: "ESM 206 Lab 8"
 author: "Claire Gonzales"
 date: "11/15/2021"
 output: html_document
@@ -103,6 +103,45 @@ plot(homes_lm2)
 # but we should consider best fit as well 
 
 summary(homes_lm1)
-
+summary(homes_lm2)
 ```
+
+Find the AIC value of each model:
+
+```{r}
+AIC(homes_lm1)
+AIC(homes_lm2)
+
+# there is a huge gap here in the model fit values. So maybe there is an intermediate model that would be best
+```
+
+Find an intermediate model that might make most sense:
+
+```{r}
+homes_lm3 <- lm(Price ~ City + SqFt + Status + Bathrooms, data = homes_sub)
+homes_lm3
+
+plot(homes_lm3)
+
+summary(homes_lm3)
+
+AIC(homes_lm3)
+```
+
+Use model summary to show model outputs side-by-side:
+BUT if you use modelsummary to  return outputs of multiple models, it wants you to feed it to it as list.
+```{r}
+modelsummary(homes_lm1)
+modelsummary(list(homes_lm1, homes_lm2, homes_lm3))
+```
+
+## start making predictions with this model
+
+Use `broom::augment`
+
+```{r}
+homes_predicted <- augment(homes_lm1)
+```
+
+Use the `predict()` function to try out your model on new scenarios that you create. 
 
