@@ -66,3 +66,43 @@ ggplot(data = homes_sub, aes(x = SqFt, y = Price)) +
   scale_y_continuous(limits = c(0,3e6))
 ```
 
+## Model the relationship with home price as dependent variable (DV)
+
+```{r}
+
+homes_lm1 <- lm(Price ~ City + Bedrooms + Bathrooms + SqFt + PricePerSqFt + Status, data = homes_sub)
+
+# Make a subset that only contains the quantitative variables 
+
+homes_quant <- homes_sub %>% 
+  select(Price:PricePerSqFt)
+
+homes_cor <- cor(homes_quant)
+homes_cor
+
+corrplot(homes_cor)
+
+# how would i explore diagnostic plots for lm1?
+
+plot(homes_lm1)
+```
+
+Try another model where we simplify this a bit:
+
+- city
+- sqft
+- status
+
+```{r}
+homes_lm2 <- lm(Price ~ City + SqFt + Status, data = homes_sub)
+homes_lm2
+
+plot(homes_lm2)
+
+
+# but we should consider best fit as well 
+
+summary(homes_lm1)
+
+```
+
