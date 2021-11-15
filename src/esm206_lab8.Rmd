@@ -5,26 +5,64 @@ date: "11/15/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Attach packages
+library(tidyverse)
+library(here)
+library(corrplot)
+library(stargazer)
+library(broom)
+library(modelsummary)
 ```
 
-## R Markdown
+## Read in Data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+homes <- read_csv(here("data", "slo_homes.csv"))
 ```
 
-## Including Plots
+A little bit of cleaning:
 
-You can also embed plots, for example:
+Make a subset called homes_sub that only contains observations where the city is:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+- San Luis Obispo
+- Arroyo Grande
+- Atascadero
+- Santa Maria-Orcutt
+
+```{r}
+homes_sub <- homes %>% 
+  filter(City %in% c("San Luis Obispo", "Arroyo Grande", "Atascadero", "Santa Maria-Orcutt"))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Do a little exploring of our data
+
+Summary statistics (home price, based on city and sale status):
+- Find and return in a nice summary table the mean and standard deviation of home price, grouped by city and sale status.
+
+```{r, include=FALSE, eval=FALSE}
+homes_summary <- homes_sub %>% 
+  group_by(City, Status) %>% 
+  summarize(
+    Mean = round(mean(Price, na.rm = TRUE), 2),
+    SD = round(sd(Price, na.rm = TRUE), 2))
+  )
+
+# Dont even want to run this code? eval = FALSE in set up line of that code chunk
+
+ggplot(data = homes_sub, aes(x = Price)) +
+  geom_density(aes(color = City, fill = City), alpha = 0.3) +
+  scale_x_continuous(limits = c(0,3e6))
+```
+
+Explore the visual relationship between square footage and home price
+
+```{r}
+ggplot(data = homes_sub, aes(x = SqFt, y = Price)) +
+  geom_point(aes(color = City, shape = Status), alpha = 0.4) +
+  geom_smooth(method = lm) +
+  scale_y_continuous(limits = c(0,3e6))
+```
+
